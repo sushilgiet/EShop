@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>d89168c9-a549-410b-83a3-b62050d841a1</UserSecretsId>
+    <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
+    <DockerfileContext>..\CatalogTest</DockerfileContext>
+  
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.0.0" />
+    <PackageReference Include="Azure.Identity" Version="1.8.2" />
+    <PackageReference Include="Azure.Security.KeyVault.Secrets" Version="4.5.0" />
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.15.1" />
+    <PackageReference Include="Azure.Storage.Queues" Version="12.10.0" />
+    <PackageReference Include="MediatR" Version="11.1.0" />
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Azure" Version="1.6.3" />
+    <PackageReference Include="Microsoft.Identity.Web" Version="2.7.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ProductCatalog.Application\ProductCatalog.Application.csproj" />
+    <ProjectReference Include="..\ProductCatalog.Domain\ProductCatalog.Domain.csproj" />
+    <ProjectReference Include="..\ProductCatalog.Persistence\ProductCatalog.Persistence.csproj" />
+  </ItemGroup>
+
+</Project>
