@@ -1,0 +1,18 @@
+{
+  "profiles": {
+    "ProductCatalog.Domain": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:60664;http://localhost:60667"
+    },
+    "Docker": {
+      "commandName": "Docker",
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
+      "httpPort": 30025,
+      "useSSL": false
+    }
+  }
+}

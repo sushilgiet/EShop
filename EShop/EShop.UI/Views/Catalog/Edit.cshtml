@@ -1,0 +1,103 @@
+﻿@model EShop.UI.Models.CatalogViewModel
+
+@{
+    ViewData["Title"] = "New Product";
+}
+
+<h1>Edit Product</h1>
+<form asp-action="Edit" method="post" enctype="multipart/form-data">
+
+
+<div class="form-group">
+
+     <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <label  class="control-label"> Select Type</label>
+                    <div>
+                        <span class="text-danger" asp-validation-for="CatalogTypeId"></span>
+                    </div>
+                    <select  class="form-control" asp-items="@Model.Types" asp-for="CatalogTypeId"></select>
+                </div>
+        </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label class="control-label"> Select Brand</label>
+                    <div>
+                        <span class="text-danger" asp-validation-for="CatalogBrandId"></span>
+                    </div>
+                    <select class="form-control" asp-items="@Model.Brands" asp-for="CatalogBrandId"></select>
+                </div>
+            </div>
+    </div>
+     
+    <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label asp-for="@Model.CatalogItem.Name"></label>
+                    <div>
+                        <span class="text-danger" asp-validation-for="@Model.CatalogItem.Name"></span>
+                    </div>
+                    <input class="form-control" type="text" asp-for="@Model.CatalogItem.Name" />
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label asp-for="@Model.CatalogItem.Price"></label>
+                    <div>
+                        <span class="text-danger" asp-validation-for="@Model.CatalogItem.Price"></span>
+                    </div>
+                    <input class="form-control" type="number" asp-for="@Model.CatalogItem.Price" />
+                </div>
+            </div>
+        </div>
+
+ 
+        <div class="row">
+            <div class="col-md-8">
+                <label asp-for="@Model.CatalogItem.Description"></label>
+                <div>
+                    <span class="text-danger" asp-validation-for="@Model.CatalogItem.Description"></span>
+                </div>
+                <textarea class="form-control" type="text" asp-for="@Model.CatalogItem.Description">
+                </textarea>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8">
+                <div class="form-group">
+                  
+                    <label>Product Image</label>
+                    <div>
+                        <img src="@Model.CatalogItem.PictureUrl" width="360" height="200" style="vertical-align:bottom" />
+                    </div>
+                    <input type="file" name="ImageUrl" class="form-control" />
+                </div>
+            </div>
+        </div>
+        <br />
+    <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <button class="btn btn-success" type="submit">Update</button>
+                </div>
+           </div>
+        </div>
+
+      
+
+
+
+
+     
+</div>
+    @Html.HiddenFor(model => model.CatalogItem.Id)
+    @Html.HiddenFor(model => model.CatalogItem.PictureFileName)
+    @Html.HiddenFor(model => model.CatalogItem.PictureUrl)
+   
+</form>
+<div>
+       
+        <a asp-action="Index">Back to List</a>
+</div>
+ 

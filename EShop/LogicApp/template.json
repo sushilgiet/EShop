@@ -1,0 +1,287 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "workflows_logic_eshopnotification_name": {
+            "defaultValue": "logic-eshopnotification",
+            "type": "String"
+        },
+        "connections_documentdb_externalid": {
+            "defaultValue": "/subscriptions/394c44b5-0799-47ad-80c1-adcd20fbdbba/resourceGroups/rg-eshop/providers/Microsoft.Web/connections/documentdb",
+            "type": "String"
+        },
+        "connections_outlook_1_externalid": {
+            "defaultValue": "/subscriptions/394c44b5-0799-47ad-80c1-adcd20fbdbba/resourceGroups/rg-eshop/providers/Microsoft.Web/connections/outlook-1",
+            "type": "String"
+        },
+        "connections_sql_externalid": {
+            "defaultValue": "/subscriptions/394c44b5-0799-47ad-80c1-adcd20fbdbba/resourceGroups/rg-eshop/providers/Microsoft.Web/connections/sql",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Logic/workflows",
+            "apiVersion": "2017-07-01",
+            "name": "[parameters('workflows_logic_eshopnotification_name')]",
+            "location": "eastus",
+            "properties": {
+                "state": "Enabled",
+                "definition": {
+                    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "$connections": {
+                            "defaultValue": {},
+                            "type": "Object"
+                        }
+                    },
+                    "triggers": {
+                        "When_an_item_is_modified_(V2)": {
+                            "recurrence": {
+                                "frequency": "Minute",
+                                "interval": 3000
+                            },
+                            "evaluatedRecurrence": {
+                                "frequency": "Minute",
+                                "interval": 3000
+                            },
+                            "splitOn": "@triggerBody()?['value']",
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['sql']['connectionId']"
+                                    }
+                                },
+                                "method": "get",
+                                "path": "/datasets/@{encodeURIComponent(encodeURIComponent('default'))},@{encodeURIComponent(encodeURIComponent('default'))}/tables/@{encodeURIComponent(encodeURIComponent('[dbo].[CatalogItems]'))}/onupdateditems",
+                                "queries": {
+                                    "$top": 100
+                                }
+                            }
+                        }
+                    },
+                    "actions": {
+                        "For_each": {
+                            "foreach": "@body('Query_documents_V5')?['value']",
+                            "actions": {
+                                "For_each_2": {
+                                    "foreach": "@body('Query_documents_V5_2')?['value']",
+                                    "actions": {
+                                        "Create_or_update_document_(V3)": {
+                                            "runAfter": {
+                                                "Send_an_email_(V2)": [
+                                                    "Succeeded"
+                                                ]
+                                            },
+                                            "type": "ApiConnection",
+                                            "inputs": {
+                                                "body": {
+                                                    "IsMailSent": true,
+                                                    "NotifyPrice": "@body('Parse_JSON')?['NotifyPrice']",
+                                                    "ProductId": "@body('Parse_JSON')?['ProductId']",
+                                                    "ProductName": "@body('Parse_JSON')?['ProductName']",
+                                                    "UserId": "@body('Parse_JSON')?['UserId']",
+                                                    "id": "88b43c63-9671-48cf-a58a-4dc5da909fd0"
+                                                },
+                                                "headers": {
+                                                    "x-ms-documentdb-is-upsert": true
+                                                },
+                                                "host": {
+                                                    "connection": {
+                                                        "name": "@parameters('$connections')['documentdb']['connectionId']"
+                                                    }
+                                                },
+                                                "method": "post",
+                                                "path": "/v2/cosmosdb/@{encodeURIComponent('AccountNameFromSettings')}/dbs/@{encodeURIComponent('productnotification')}/colls/@{encodeURIComponent('NotificationInfo')}/docs"
+                                            }
+                                        },
+                                        "Parse_JSON_2": {
+                                            "runAfter": {},
+                                            "type": "ParseJson",
+                                            "inputs": {
+                                                "content": "@items('For_each_2')",
+                                                "schema": {
+                                                    "properties": {
+                                                        "Email": {
+                                                            "type": "string"
+                                                        },
+                                                        "Name": {
+                                                            "type": "string"
+                                                        },
+                                                        "UserId": {
+                                                            "type": "string"
+                                                        },
+                                                        "_attachments": {
+                                                            "type": "string"
+                                                        },
+                                                        "_etag": {
+                                                            "type": "string"
+                                                        },
+                                                        "_rid": {
+                                                            "type": "string"
+                                                        },
+                                                        "_self": {
+                                                            "type": "string"
+                                                        },
+                                                        "_ts": {
+                                                            "type": "integer"
+                                                        },
+                                                        "id": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            }
+                                        },
+                                        "Send_an_email_(V2)": {
+                                            "runAfter": {
+                                                "Parse_JSON_2": [
+                                                    "Succeeded"
+                                                ]
+                                            },
+                                            "type": "ApiConnection",
+                                            "inputs": {
+                                                "body": {
+                                                    "Body": "<p>Hello @{body('Parse_JSON_2')?['Name']},<br>\nThe price of &nbsp;@{body('Parse_JSON')?['ProductName']} &nbsp;has changed to @{body('Parse_JSON')?['NotifyPrice']}</p>",
+                                                    "Importance": "Normal",
+                                                    "Subject": "Price Change Alert",
+                                                    "To": "@body('Parse_JSON_2')?['Email']"
+                                                },
+                                                "host": {
+                                                    "connection": {
+                                                        "name": "@parameters('$connections')['outlook_1']['connectionId']"
+                                                    }
+                                                },
+                                                "method": "post",
+                                                "path": "/v2/Mail"
+                                            }
+                                        }
+                                    },
+                                    "runAfter": {
+                                        "Query_documents_V5_2": [
+                                            "Succeeded"
+                                        ]
+                                    },
+                                    "type": "Foreach"
+                                },
+                                "Parse_JSON": {
+                                    "runAfter": {},
+                                    "type": "ParseJson",
+                                    "inputs": {
+                                        "content": "@items('For_each')",
+                                        "schema": {
+                                            "properties": {
+                                                "IsMailSent": {
+                                                    "type": "boolean"
+                                                },
+                                                "NotifyPrice": {
+                                                    "type": "integer"
+                                                },
+                                                "ProductId": {
+                                                    "type": "integer"
+                                                },
+                                                "ProductName": {
+                                                    "type": "string"
+                                                },
+                                                "UserId": {
+                                                    "type": "string"
+                                                },
+                                                "_attachments": {
+                                                    "type": "string"
+                                                },
+                                                "_etag": {
+                                                    "type": "string"
+                                                },
+                                                "_rid": {
+                                                    "type": "string"
+                                                },
+                                                "_self": {
+                                                    "type": "string"
+                                                },
+                                                "_ts": {
+                                                    "type": "integer"
+                                                },
+                                                "id": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "Query_documents_V5_2": {
+                                    "runAfter": {
+                                        "Parse_JSON": [
+                                            "Succeeded"
+                                        ]
+                                    },
+                                    "type": "ApiConnection",
+                                    "inputs": {
+                                        "host": {
+                                            "connection": {
+                                                "name": "@parameters('$connections')['documentdb']['connectionId']"
+                                            }
+                                        },
+                                        "method": "get",
+                                        "path": "/v5/cosmosdb/@{encodeURIComponent('AccountNameFromSettings')}/dbs/@{encodeURIComponent('productnotification')}/colls/@{encodeURIComponent('UserInfo')}/query",
+                                        "queries": {
+                                            "queryText": "select TOP 1  * from c where c.UserId=\"@{body('Parse_JSON')?['UserId']}\""
+                                        }
+                                    }
+                                }
+                            },
+                            "runAfter": {
+                                "Query_documents_V5": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "Foreach"
+                        },
+                        "Query_documents_V5": {
+                            "runAfter": {},
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['documentdb']['connectionId']"
+                                    }
+                                },
+                                "method": "get",
+                                "path": "/v5/cosmosdb/@{encodeURIComponent('AccountNameFromSettings')}/dbs/@{encodeURIComponent('productnotification')}/colls/@{encodeURIComponent('NotificationInfo')}/query",
+                                "queries": {
+                                    "queryText": "select * from c where c.NotifyPrice >=@{triggerBody()?['Price']} and c.ProductId=@{triggerBody()?['Id']} and c.IsMailSent=false"
+                                }
+                            }
+                        }
+                    },
+                    "outputs": {}
+                },
+                "parameters": {
+                    "$connections": {
+                        "value": {
+                            "documentdb": {
+                                "connectionId": "[parameters('connections_documentdb_externalid')]",
+                                "connectionName": "documentdb",
+                                "id": "/subscriptions/394c44b5-0799-47ad-80c1-adcd20fbdbba/providers/Microsoft.Web/locations/eastus/managedApis/documentdb"
+                            },
+                            "outlook_1": {
+                                "connectionId": "[parameters('connections_outlook_1_externalid')]",
+                                "connectionName": "outlook-1",
+                                "id": "/subscriptions/394c44b5-0799-47ad-80c1-adcd20fbdbba/providers/Microsoft.Web/locations/eastus/managedApis/outlook"
+                            },
+                            "sql": {
+                                "connectionId": "[parameters('connections_sql_externalid')]",
+                                "connectionName": "sql",
+                                "id": "/subscriptions/394c44b5-0799-47ad-80c1-adcd20fbdbba/providers/Microsoft.Web/locations/eastus/managedApis/sql"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    ]
+}

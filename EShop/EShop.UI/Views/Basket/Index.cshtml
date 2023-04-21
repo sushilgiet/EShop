@@ -1,0 +1,40 @@
+﻿
+
+@model EShop.UI.Models.Basket
+<h3>Shopping Cart</h3>
+<div>
+<table class="table">
+    <tr>
+        <th></th>
+        <th>Product Name</th>
+        <th>Unit Price</th>
+        <th>Quantity</th>
+        <th></th>
+        <th></th>
+    </tr>
+
+@foreach(var basketItem in Model.Items)
+{
+      <tr>
+
+            <th>
+                <img src="@basketItem.PictureUrl" width="360" height="200" style="vertical-align:bottom" />
+                
+            </th>
+            <th>@basketItem.ProductName</th>
+            <th>@basketItem.UnitPrice</th>
+            <th>@basketItem.Quantity</th>
+            <th></th>
+            <th></th>
+
+      </tr>
+
+
+}
+</table>
+    <div>
+        <p>
+            <a asp-action="ClearBasket">Clear Cart</a>
+        </p>
+    </div>
+</div>

@@ -1,0 +1,85 @@
+﻿@model EShop.UI.Models.CatalogItem
+
+@{
+    ViewData["Title"] = "Details";
+    var CatalogTypes = (List<CatalogType>)ViewBag.CatalogTypes;
+    var CatalogBrands = (List<CatalogBrand>)ViewBag.CatalogBrands;
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Catalog Item</h4>
+    <hr />
+    <dl class="row">
+       @* <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Id)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Id)
+        </dd>*@
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Price)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Price)
+        </dd>
+        <dt class = "col-sm-2">
+           Thumbnail Image
+        </dt>
+       @* <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.PictureFileName)
+        </dd>
+        <dt class="col-sm-2">
+           
+        </dt>*@
+        <dd class="col-sm-10">
+            <img src="@Model.PictureFileName" width="60" height="40" style="vertical-align:bottom" />
+        </dd>
+       @* <dt class = "col-sm-2">
+           Picture Url
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.PictureUrl)
+        </dd>*@
+        <dt class="col-sm-2">
+          Catalog  Image
+        </dt>
+        <dd class = "col-sm-10">
+            <img src="@Model.PictureUrl" width="360" height="200" style="vertical-align:bottom" />
+        </dd>
+        <dt class = "col-sm-2">
+           Catalog Type
+        </dt>
+        <dd class = "col-sm-10">
+            @CatalogTypes.Where(t=>t.Id==Model.CatalogTypeId).Select(t=>t.Type).FirstOrDefault()
+        </dd>
+        <dt class="col-sm-2">
+            Catalog Brand
+        </dt>
+        <dd class = "col-sm-10">
+            @CatalogBrands.Where(t=>t.Id==Model.CatalogBrandId).Select(t=>t.Brand).FirstOrDefault()
+        </dd>
+        
+    </dl>
+</div>
+<br />
+<div>
+    <br />
+    <div><p>@Html.ActionLink("AddToCart", "AddToBasket","Basket", new {  productId=Model.Id  })</p> </div>
+    <div><p><a asp-action="Index">Back to Catalog List</a></p></div>
+    
+   
+</div>

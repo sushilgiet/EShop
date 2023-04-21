@@ -1,0 +1,111 @@
+﻿@model EShop.UI.Models.CatalogViewModel
+
+@{
+    ViewData["Title"] = "New Product";
+}
+
+<h1>Create New Product</h1>
+<form asp-action="Create" method="post" enctype="multipart/form-data">
+
+
+<div class="form-group">
+
+     <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <label  class="control-label"> Select Type</label>
+                    <select  class="form-control" asp-items="@Model.Types" asp-for="CatalogTypeId"></select>
+                </div>
+        </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label class="control-label"> Select Brand</label>
+                    <select class="form-control" asp-items="@Model.Brands" asp-for="CatalogBrandId"></select>
+                </div>
+            </div>
+    </div>
+     
+    <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label asp-for="@Model.CatalogItem.Name"></label>
+                    <div>
+                        <span class="text-danger" asp-validation-for="@Model.CatalogItem.Name"></span>
+                    </div>
+                    <input class="form-control" type="text" asp-for="@Model.CatalogItem.Name" />
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label asp-for="@Model.CatalogItem.Price"></label>
+                    <div>
+                        <span class="text-danger" asp-validation-for="@Model.CatalogItem.Price"></span>
+                    </div>
+                    <input class="form-control" type="number" asp-for="@Model.CatalogItem.Price" />
+                </div>
+            </div>
+        </div>
+
+   @* <div class="row">
+            <div class="col-md-8">
+                <div class="form-group">
+                    <label asp-for="@Model.CatalogItem.Description"></label>
+                    <div>
+                        <span class="text-danger" asp-validation-for="@Model.CatalogItem.Description"></span>
+                    </div>
+                    <textarea class="form-control" type="text" asp-for="@Model.CatalogItem.Description" />
+                </div>
+            </div>
+        </div>*@
+        <div class="row">
+            <div class="col-md-8">
+                <label asp-for="@Model.CatalogItem.Description"></label>
+                <textarea class="form-control" type="text" asp-for="@Model.CatalogItem.Description">
+                </textarea>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8">
+                <div class="form-group">
+                    @*<label asp-for=""></label>*@
+                    <label>Product Image</label>
+                    <div>
+                       @* <span class="text-danger" asp-validation-for=""></span>*@
+                    </div>
+                    <input type="file" name="ImageUrl" class="form-control" />
+                </div>
+            </div>
+        </div>
+        <br/>
+    <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <button class="btn btn-success" type="submit">Add</button>
+                </div>
+           </div>
+        </div>
+
+      
+
+
+
+
+        @* <label asp-for="ImageURL" class="control-label"></label>
+    <input type="file" name="ImageUrl" class="form-control" />
+    <span asp-validation-for="ImageURL" class="text-danger"></span>*@
+</div>
+  
+</form>
+<div>
+        @*@Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |*@
+        <a asp-action="Index">Back to List</a>
+</div>
+   @* public string Name { get; set; }
+    public string Description { get; set; }
+    public decimal Price { get; set; }
+    public string PictureFileName { get; set; }
+    public string PictureUrl { get; set; }
+    public int CatalogTypeId { get; set; }
+    public int CatalogBrandId { get; set; }
+    public CatalogBrand CatalogBrand { get; set; }
+    public CatalogType CatalogType { get; set; }*@

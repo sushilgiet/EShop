@@ -1,0 +1,125 @@
+﻿@model IEnumerable<EShop.UI.Models.CatalogItem>
+<head>
+    <style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Float four columns side by side */
+.column {
+  float: left;
+  width: 33%;
+  padding: 0 10px;
+}
+
+/* Remove extra left and right margins, due to padding */
+.row {margin: 0 -5px;}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* Responsive columns */
+
+
+/* Style the counter cards */
+.card {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  padding: 16px;
+  text-align: center;
+  background-color: #f1f1f1;
+
+  max-width: 300px;
+  margin: auto;
+  text-align: center;
+  font-family: arial;
+}
+
+        .price {
+            color: grey;
+            font-size: 22px;
+        }
+
+        .card button {
+            border: none;
+            outline: 0;
+            padding: 12px;
+            color: white;
+            background-color: #000;
+            text-align: center;
+            cursor: pointer;
+            width: 100%;
+            font-size: 15px;
+        }
+
+            .card button:hover {
+                opacity: 0.7;
+            }
+</style>
+
+
+</head>
+@{
+    ViewData["Title"] = "Index";
+    var CatalogTypes = (List<CatalogType>)ViewBag.CatalogTypes;
+    var CatalogBrands = (List<CatalogBrand>)ViewBag.CatalogBrands;
+    int total = Model.Count();
+    int itemcount = 0;
+    int rowcount = total / 3;
+    int itemleft = total % 3;
+}
+<div></div>
+<div>
+    <div>
+        <p style="padding:16px">
+            <button><a asp-action="Create">Create New</a></button>
+        </p>
+    </div>
+@for(int i = 0; i < rowcount; i++)
+{
+    <div class="row">
+
+        @for(int j=0;j<3;j++){
+
+            <div class="column">
+                <div class="card">
+                 <img src="@Model.ElementAt(itemcount).PictureUrl" alt="Shoe" style="width:100%;height:150px;">
+                        <p>@Model.ElementAt(itemcount).Name</p>
+                        <p class="price">@Model.ElementAt(itemcount).Price</p>
+                        <p>@Model.ElementAt(itemcount).Description</p>
+                        <p><button> @Html.ActionLink("Details", "Details", new { id = @Model.ElementAt(itemcount).Id  })  @Html.ActionLink("AddToCart", "AddToBasket","Basket", new {  productId=@Model.ElementAt(itemcount).Id  })  @Html.ActionLink("Notify", "NotifyPriceChange", new {  id=@Model.ElementAt(itemcount).Id })</button></p>
+                        <p><button>  @Html.ActionLink("Edit", "Edit", new { id=@Model.ElementAt(itemcount).Id  })   @Html.ActionLink("Delete", "Delete", new {  id=@Model.ElementAt(itemcount).Id }  )</button></p>
+        
+                 </div>
+            </div>
+            itemcount++;
+        }
+    </div>
+
+
+}
+<div class="row">
+
+    @for (int k = 0; k < itemleft; k++)
+    {
+
+        <div class="column">
+                <div class="card"> <img src="@Model.ElementAt(itemcount).PictureUrl" alt="Shoe" style="width:100%;height:150px;">
+                            <p>@Model.ElementAt(itemcount).Name</p>
+                            <p class="price">@Model.ElementAt(itemcount).Price</p>
+                                <p>@Model.ElementAt(itemcount).Description</p>
+                                <p><button> @Html.ActionLink("Details", "Details", new { id = @Model.ElementAt(itemcount).Id  })  @Html.ActionLink("AddToCart", "AddToBasket","Basket", new {  productId=@Model.ElementAt(itemcount).Id  })  @Html.ActionLink("Notify", "NotifyPriceChange", new {  id=@Model.ElementAt(itemcount).Id })</button></p>
+                            <p><button>  @Html.ActionLink("Edit", "Edit", new { id=@Model.ElementAt(itemcount).Id  })   @Html.ActionLink("Delete", "Delete", new {  id=@Model.ElementAt(itemcount).Id }  )</button></p>
+            </div>
+        </div>
+        itemcount++;
+    }
+</div>
+</div>

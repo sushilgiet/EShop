@@ -1,0 +1,18 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "workflows_logic_eshopnotification_name": {
+            "value": null
+        },
+        "connections_documentdb_externalid": {
+            "value": null
+        },
+        "connections_outlook_1_externalid": {
+            "value": null
+        },
+        "connections_sql_externalid": {
+            "value": null
+        }
+    }
+}
