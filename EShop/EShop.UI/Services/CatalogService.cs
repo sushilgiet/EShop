@@ -26,11 +26,13 @@ namespace EShop.UI.Services
         private string _catalogServiceUrl;
         private string _ocpApimSubscriptionKey;
         private IConfiguration _configuration;
+        private int _retryCount;
         public CatalogService(IConfiguration config)
         {
             _configuration= config;
             _catalogServiceUrl = _configuration["CatalogUrl"];
             _ocpApimSubscriptionKey = _configuration["OcpApimSubscriptionKey"];
+            _retryCount = 3;
         }
         public async Task<CatalogItem> GetCatalogItemAsync(int id)
         {
@@ -56,9 +58,24 @@ namespace EShop.UI.Services
                 NoCache = true
             };
             string url =$"{_catalogServiceUrl}/CatalogItems/";
-            var response = await client.GetAsync(url);
-            var json = await response.Content.ReadAsStringAsync();
-            IEnumerable<CatalogItem> items = JsonConvert.DeserializeObject<IEnumerable<CatalogItem>>(json);
+            int retry = 0;
+            IEnumerable<CatalogItem> items = null;
+            while (retry < _retryCount)
+            {
+                try
+                {
+                    var response = await client.GetAsync(url);
+                    var json = await response.Content.ReadAsStringAsync();
+                    items = JsonConvert.DeserializeObject<IEnumerable<CatalogItem>>(json);
+                    retry++;
+                }
+                catch(Exception ex)
+                {
+                    if(retry==3)
+                    throw ex;
+                }
+            }
+            
             return items;
         }
         public async Task<IEnumerable<CatalogType>> GetCatalogTypesAsync()
@@ -196,3 +213,14 @@ namespace EShop.UI.Services
         }
     }
 }
+//var retryPolicy = Policy
+//        .Handle<HttpRequestException>()
+//        .WaitAndRetryAsync(retryCount, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
+
+//using var client = new HttpClient();
+//var response = await retryPolicy.ExecuteAsync(async () => await client.SendAsync(request));
+
+//if (response.IsSuccessStatusCode)
+//{
+//    return response;
+//}

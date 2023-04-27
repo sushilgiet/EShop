@@ -1,7 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using EventBus.Abstractions;
+using EventBus.Implementations;
+using MessageSender;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using ProductCatalog.Application.Contracts;
 using ProductCatalog.Application.Contracts.Persistence;
 using System;
 using System.Collections.Generic;
@@ -21,6 +25,10 @@ namespace ProductCatalog.Persistance
             services.AddTransient<ICatalogItemRepository, CatalogItemRepository>();
             services.AddTransient<ICatalogTypeRepository, CatalogTypeRepository>();
             services.AddTransient<ICatalogBrandRepository, CatalogBrandRepository>();
+            services.AddSingleton<IMessageSender>(x =>
+            {
+                return new MessageSender.MessageSender(configuration.GetConnectionString("CatalogImageContainer"), configuration["CatalogImageQueue"]);
+            });
             return services;
         }
     }

@@ -34,7 +34,7 @@ namespace ProductCatalog.API.Controllers
             // return Ok(await _boItem.GetCatalogItems());
              var query = new GetAllCatalogItemQuery();
              return Ok(await _mediator.Send(query));
-            ;
+            
         }
 
         // GET: api/CatalogItems/5
@@ -51,7 +51,7 @@ namespace ProductCatalog.API.Controllers
 
             return catalogItem;
         }
-
+     
         // PUT: api/CatalogItems/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
@@ -62,7 +62,16 @@ namespace ProductCatalog.API.Controllers
             {
                 return BadRequest();
             }
-            var command = new UpdateCatalogItemCommand { ProductToUpdate = catalogItem };
+            var command = new UpdateCatalogItemCommand {
+                Name = catalogItem.Name,
+                Price = catalogItem.Price,
+                CatalogBrandId = catalogItem.CatalogBrandId,
+                CatalogTypeId = catalogItem.CatalogTypeId,
+                Description = catalogItem.Description,
+                PictureFileName = catalogItem.PictureFileName,
+                PictureUrl = catalogItem.PictureUrl,
+                Id= catalogItem.Id
+            };
             await _mediator.Send(command);
             return NoContent();
         }
@@ -73,7 +82,16 @@ namespace ProductCatalog.API.Controllers
         [HttpPost]
         public async Task<ActionResult<CatalogItem>> PostCatalogItem(CatalogItem catalogItem)
         {
-            var command = new AddCatalogItemCommand { Item = catalogItem };
+            var command = new AddCatalogItemCommand { 
+            Name= catalogItem.Name,
+            Price= catalogItem.Price,
+            CatalogBrandId= catalogItem.CatalogBrandId,
+            CatalogTypeId= catalogItem.CatalogTypeId,
+            Description= catalogItem.Description,
+            PictureFileName= catalogItem.PictureFileName,
+            PictureUrl= catalogItem.PictureUrl
+            
+            };
             var item=await _mediator.Send(command);
             return CreatedAtAction("GetCatalogItem", new { id = catalogItem.Id }, item);
         }

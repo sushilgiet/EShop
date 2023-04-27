@@ -20,9 +20,11 @@ namespace ShoppingBasket.API.Controllers
     {
        
         private readonly IMediator _mediator;
-        public BasketController(IMediator mediator)
+        private readonly ILogger<BasketController> _logger;
+        public BasketController(IMediator mediator, ILogger<BasketController> logger)
         {
-            _mediator=mediator;
+            _mediator = mediator;
+            _logger = logger;
         }
         // GET basket/5
         [HttpGet("{id}")]
@@ -46,11 +48,11 @@ namespace ShoppingBasket.API.Controllers
 
         // DELETE bakset/5
         [HttpDelete("{id}")]
-        public void Delete(string id)
+        public async Task<IActionResult> DeleteAsync(string id)
         {
             DeleteBasketItemCommand command = new DeleteBasketItemCommand { Id=id };
-             _mediator.Send(command);
-          
+            await _mediator.Send(command);
+            return NoContent();
         }
 
     }

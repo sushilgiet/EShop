@@ -21,7 +21,9 @@ namespace ProductCatalog.Application.Handlers
 
         public async Task<CatalogItem> Handle(AddCatalogItemCommand request, CancellationToken cancellationToken)
         {
-            return await _repo.Add(request.Item);
+            CatalogItem item = new CatalogItem(request.Name, request.Description,request.Price,request.PictureFileName, request.PictureUrl, request.CatalogTypeId, request.CatalogBrandId);
+            item.Validate();
+            return await _repo.Add(item);
         }
     }
   

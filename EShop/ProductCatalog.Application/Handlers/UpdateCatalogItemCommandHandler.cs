@@ -4,6 +4,7 @@ using ProductCatalog.Application.Commands;
 using ProductCatalog.Application.Contracts.Persistence;
 using ProductCatalog.Application.Events;
 using ProductCatalog.Domain;
+using ProductCatalog.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,30 +18,36 @@ namespace ProductCatalog.Application.Handlers
 
         private readonly ICatalogItemRepository _repo;
         private readonly IEventBus    _eventBus;
+
         public UpdateCatalogItemCommandHandler(ICatalogItemRepository repo, IEventBus bus)
         {
             _repo = repo;
             _eventBus = bus;
         }
 
-        async Task<Unit> IRequestHandler<UpdateCatalogItemCommand, Unit>.Handle(UpdateCatalogItemCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(UpdateCatalogItemCommand request, CancellationToken cancellationToken)
         {
-            var catalogItem = await _repo.GetById(request.ProductToUpdate.Id);
+            var catalogItem = await _repo.GetById(request.Id);
             var oldPrice = catalogItem.Price;
-            var raiseProductPriceUpdatedEvent = oldPrice != request.ProductToUpdate.Price;
-            foreach (var pi in request.ProductToUpdate.GetType().GetProperties())
+            var raiseProductPriceUpdatedEvent = oldPrice != request.Price;
+            var newCatalogItem = new CatalogItem(
+                request.Name, request.Description, request.Price, request.PictureFileName,request.PictureUrl, request.CatalogTypeId, request.CatalogBrandId, request.Id);
+            newCatalogItem.Validate();
+            foreach (var pi in newCatalogItem.GetType().GetProperties())
             {
-                pi.SetValue(catalogItem, pi.GetValue(request.ProductToUpdate));
+                pi.SetValue(catalogItem, pi.GetValue(newCatalogItem));
             }
             await _repo.Update(catalogItem);
             if (raiseProductPriceUpdatedEvent)
             {
-                var priceChangedEvent = new ProductPriceChangedEvent(request.ProductToUpdate.Id, request.ProductToUpdate.Price, oldPrice);
+                var priceChangedEvent = new ProductPriceChangedEvent(request.Id, request.Price, oldPrice);
                 _eventBus.Publish(priceChangedEvent);
             }
 
-            
-            return await Task.FromResult(Unit.Value); 
+
+            return await Task.FromResult(Unit.Value);
         }
+
+      
     }
 }

@@ -56,6 +56,7 @@ namespace Notification.API.Controller
                 Email = notification.Email,
                 Name = notification.UserName
             };
+           
             await container.CreateItemAsync(user);
         }
     }

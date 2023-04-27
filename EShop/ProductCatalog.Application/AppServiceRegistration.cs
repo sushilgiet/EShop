@@ -6,6 +6,7 @@ using ProductCatalog.Application.Contracts;
 
 using MediatR;
 using System.Reflection;
+using Microsoft.Azure.ServiceBus.Core;
 
 namespace ProductCatalog.Application
 {
@@ -18,6 +19,7 @@ namespace ProductCatalog.Application
             {
                 return new AzureEventBus(configuration["ServiceBusConnectionString"], configuration["TopicName"]);
             });
+           
             services.AddMediatR(Assembly.GetExecutingAssembly());
             return services;
         }

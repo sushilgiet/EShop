@@ -39,7 +39,7 @@
                 <div class="form-group">
                     <label asp-for="@Model.CatalogItem.Price"></label>
                     <div>
-                        <span class="text-danger" asp-validation-for="@Model.CatalogItem.Price"></span>
+                        <span class="text-danger"> @Html.ValidationMessageFor(x => x.CatalogItem.Price)</span>
                     </div>
                     <input class="form-control" type="number" asp-for="@Model.CatalogItem.Price" />
                 </div>
@@ -90,9 +90,7 @@
 
 
 
-        @* <label asp-for="ImageURL" class="control-label"></label>
-    <input type="file" name="ImageUrl" class="form-control" />
-    <span asp-validation-for="ImageURL" class="text-danger"></span>*@
+      
 </div>
   
 </form>

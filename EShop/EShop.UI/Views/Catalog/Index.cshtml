@@ -96,8 +96,8 @@ body {
                         <p>@Model.ElementAt(itemcount).Description</p>
                         <p><button> @Html.ActionLink("Details", "Details", new { id = @Model.ElementAt(itemcount).Id  })  @Html.ActionLink("AddToCart", "AddToBasket","Basket", new {  productId=@Model.ElementAt(itemcount).Id  })  @Html.ActionLink("Notify", "NotifyPriceChange", new {  id=@Model.ElementAt(itemcount).Id })</button></p>
                         <p><button>  @Html.ActionLink("Edit", "Edit", new { id=@Model.ElementAt(itemcount).Id  })   @Html.ActionLink("Delete", "Delete", new {  id=@Model.ElementAt(itemcount).Id }  )</button></p>
-        
-                 </div>
+                        
+                    </div>
             </div>
             itemcount++;
         }
