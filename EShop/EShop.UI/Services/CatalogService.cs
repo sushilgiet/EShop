@@ -18,6 +18,7 @@ using System.Text;
 using System.Threading.Tasks;
 using EShop.UI.Models;
 using static System.Formats.Asn1.AsnWriter;
+using Polly;
 
 namespace EShop.UI.Services
 {
@@ -26,21 +27,23 @@ namespace EShop.UI.Services
         private string _catalogServiceUrl;
         private string _ocpApimSubscriptionKey;
         private IConfiguration _configuration;
-        private int _retryCount;
-        public CatalogService(IConfiguration config)
+        private HttpClient _httpClient;
+        public CatalogService(IConfiguration config, IHttpClientFactory httpClientFactory)
         {
             _configuration= config;
             _catalogServiceUrl = _configuration["CatalogUrl"];
             _ocpApimSubscriptionKey = _configuration["OcpApimSubscriptionKey"];
-            _retryCount = 3;
+            _httpClient = httpClientFactory.CreateClient("EshopHttpClient");
+            _httpClient.DefaultRequestHeaders.Remove("Authorization");
+            _httpClient.DefaultRequestHeaders.Remove("Ocp-Apim-Subscription-Key");
         }
         public async Task<CatalogItem> GetCatalogItemAsync(int id)
         {
-            var client = new HttpClient();
-            client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _ocpApimSubscriptionKey);
-            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + GetAccessToken("CatalogAPI").Result);
+            ClearAuthorizationHeaders();
+            _httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _ocpApimSubscriptionKey);
+            _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + GetAccessToken("CatalogAPI").Result);
             string url = _catalogServiceUrl + "/CatalogItems/" + id;
-            var response = await client.GetAsync(url);
+            var response = await _httpClient.GetAsync(url);
             var json = await response.Content.ReadAsStringAsync();
             CatalogItem item = JsonConvert.DeserializeObject<CatalogItem>(json);
 
@@ -49,69 +52,68 @@ namespace EShop.UI.Services
        
         public async Task<IEnumerable<CatalogItem>> GetCatalogItemsAsync()
         {
-            var client = new HttpClient();
-            client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _ocpApimSubscriptionKey);
+            ClearAuthorizationHeaders();
+            _httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _ocpApimSubscriptionKey);
             string accessToken = GetAccessToken("CatalogAPI").Result;
-            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + accessToken);
-            client.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue
+            _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + accessToken);
+            _httpClient.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue
             {
                 NoCache = true
             };
             string url =$"{_catalogServiceUrl}/CatalogItems/";
-            int retry = 0;
+           
             IEnumerable<CatalogItem> items = null;
-            while (retry < _retryCount)
-            {
+          
                 try
                 {
-                    var response = await client.GetAsync(url);
+                    var response = await _httpClient.GetAsync(url);
                     var json = await response.Content.ReadAsStringAsync();
                     items = JsonConvert.DeserializeObject<IEnumerable<CatalogItem>>(json);
-                    retry++;
+                   
                 }
                 catch(Exception ex)
                 {
-                    if(retry==3)
-                    throw ex;
+                   
+                    
                 }
-            }
+            
             
             return items;
         }
         public async Task<IEnumerable<CatalogType>> GetCatalogTypesAsync()
         {
-            var client = new HttpClient();
-            client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _ocpApimSubscriptionKey);
-            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + GetAccessToken("CatalogAPI").Result);
+            ClearAuthorizationHeaders();
+            _httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _ocpApimSubscriptionKey);
+            _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + GetAccessToken("CatalogAPI").Result);
             string url = $"{_catalogServiceUrl}/CatalogTypes/";
-            var response = await client.GetAsync(url);
+            var response = await _httpClient.GetAsync(url);
             var json = await response.Content.ReadAsStringAsync();
             IEnumerable<CatalogType> items = JsonConvert.DeserializeObject<IEnumerable<CatalogType>>(json);
             return items;
         }
         public async Task<IEnumerable<CatalogBrand>> GetCatalogBrandsAsync()
         {
-            var client = new HttpClient();
-            client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _ocpApimSubscriptionKey);
-            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + GetAccessToken("CatalogAPI").Result);
+            ClearAuthorizationHeaders();
+            _httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _ocpApimSubscriptionKey);
+            _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + GetAccessToken("CatalogAPI").Result);
             string url = $"{_catalogServiceUrl}/CatalogBrands/";
-            var response = await client.GetAsync(url);
+            var response = await _httpClient.GetAsync(url);
             var json = await response.Content.ReadAsStringAsync();
             IEnumerable<CatalogBrand> items = JsonConvert.DeserializeObject<IEnumerable<CatalogBrand>>(json);
             return items;
         }
         public async Task<string> UploadProductImage(IFormFile imageURL)
         {
-            var client = new HttpClient();
-            client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _ocpApimSubscriptionKey);
-            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + GetAccessToken("CatalogAPI").Result);
+            ClearAuthorizationHeaders();
+            _httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _ocpApimSubscriptionKey);
+            _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + GetAccessToken("CatalogAPI").Result);
             var content = new MultipartFormDataContent();
             var fileContent = new StreamContent(imageURL.OpenReadStream());
             fileContent.Headers.ContentType = MediaTypeHeaderValue.Parse("multipart/form-data");
             content.Add(fileContent, "file", imageURL.FileName);
 
             string url = $"{_catalogServiceUrl}/UploadProductImage";
-            var response = await client.PostAsync(url, content);
+            var response = await _httpClient.PostAsync(url, content);
             var bloburl = await response.Content.ReadAsStringAsync();
             return bloburl;
             
@@ -120,45 +122,45 @@ namespace EShop.UI.Services
 
         public async Task<CatalogItem> AddCatalogItemAsync(CatalogItem item)
         {
-            var client = new HttpClient();
-            client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _ocpApimSubscriptionKey);
-            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + GetAccessToken("CatalogAPI").Result);
+            ClearAuthorizationHeaders();
+            _httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _ocpApimSubscriptionKey);
+            _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + GetAccessToken("CatalogAPI").Result);
             var content = JsonConvert.SerializeObject(item);
             string url = $"{_catalogServiceUrl}/CatalogItems";
-            var response = await client.PostAsJsonAsync(url, item);
+            var response = await _httpClient.PostAsJsonAsync(url, item);
             var json = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject <CatalogItem>(json);
         }
         public async Task<CatalogItem> UpdateCatalogItemAsync(CatalogItem item)
         {
-            var client = new HttpClient();
-            client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _ocpApimSubscriptionKey);
-            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + GetAccessToken("CatalogAPI").Result);
+            ClearAuthorizationHeaders();
+            _httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _ocpApimSubscriptionKey);
+            _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + GetAccessToken("CatalogAPI").Result);
             var content = JsonConvert.SerializeObject(item);
             string url = $"{_catalogServiceUrl}/CatalogItems/"+ item.Id;
-            var response = await client.PutAsJsonAsync(url,item);
+            var response = await _httpClient.PutAsJsonAsync(url,item);
             var json = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<CatalogItem>(json);
         }
         //PutCatalogItem
         public async void ProductImageUploadEvent(string uri,int id)
         {
-            var client = new HttpClient();
-            client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _ocpApimSubscriptionKey);
-            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + GetAccessToken("CatalogAPI").Result);
+             ClearAuthorizationHeaders();
+            _httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _ocpApimSubscriptionKey);
+             _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + GetAccessToken("CatalogAPI").Result);
             string url = $"{_catalogServiceUrl}/ProductImageUploadEvent";
             BlobInformation blobInformation = new BlobInformation();
             blobInformation.BlobUri = new Uri(uri);
             blobInformation.Id = id;
-            await client.PostAsJsonAsync(url, blobInformation);
+            await _httpClient.PostAsJsonAsync(url, blobInformation);
         }
         public async Task DeleteCatalogItem(int id)
         {
-            var client = new HttpClient();
-            client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _ocpApimSubscriptionKey);
-            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + GetAccessToken("CatalogAPI").Result);
+            ClearAuthorizationHeaders();
+            _httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _ocpApimSubscriptionKey);
+            _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + GetAccessToken("CatalogAPI").Result);
             string url = $"{_catalogServiceUrl}/CatalogItems/{id}";
-            var response = await client.DeleteAsync(url);
+            var response = await _httpClient.DeleteAsync(url);
            
         }
         private string GetAccessToken()
@@ -202,25 +204,19 @@ namespace EShop.UI.Services
 
         public async Task<PriceChangeRequest> NotifyPriceUpdateAsync(PriceChangeRequest item)
         {
-            var client = new HttpClient();
-            client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _ocpApimSubscriptionKey);
-            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + GetAccessToken("NotificationAPI").Result);
+            ClearAuthorizationHeaders();
+            _httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _ocpApimSubscriptionKey);
+            _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + GetAccessToken("NotificationAPI").Result);
             var content = JsonConvert.SerializeObject(item);
             string url = $"{_configuration["NotificationUrl"]}/PriceUpdateNotification";
-            var response = await client.PostAsJsonAsync(url, item);
+            var response = await _httpClient.PostAsJsonAsync(url, item);
             var json = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<PriceChangeRequest>(json);
         }
+        private void ClearAuthorizationHeaders()
+        {
+            _httpClient.DefaultRequestHeaders.Remove("Authorization");
+            _httpClient.DefaultRequestHeaders.Remove("Ocp-Apim-Subscription-Key");
+        }
     }
 }
-//var retryPolicy = Policy
-//        .Handle<HttpRequestException>()
-//        .WaitAndRetryAsync(retryCount, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
-
-//using var client = new HttpClient();
-//var response = await retryPolicy.ExecuteAsync(async () => await client.SendAsync(request));
-
-//if (response.IsSuccessStatusCode)
-//{
-//    return response;
-//}

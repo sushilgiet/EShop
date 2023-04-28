@@ -20,14 +20,18 @@ namespace EShop.UI.Services
         private readonly string _remoteServiceBaseUrl;
         private readonly string _ocpApimSubscriptionKey;
         private readonly IConfiguration _configuration;
-        public BasketService(IConfiguration config)
+        private HttpClient _httpClient;
+        public BasketService(IConfiguration config,IHttpClientFactory httpClientFactory)
         {
              _configuration = config;
             _remoteServiceBaseUrl = _configuration["ShoppingCartUrl"];
             _ocpApimSubscriptionKey = _configuration["OcpApimSubscriptionKey"];
+            _httpClient = httpClientFactory.CreateClient("EshopHttpClient");
+          
         }
         public async Task AddItemToBasket(string userId, BasketItem product)
         {
+            ClearAuthorizationHeaders();
             var basket = await GetBasket(userId);
             var basketItem = basket.Items
                 .Where(p => p.ProductId == product.ProductId)
@@ -45,20 +49,20 @@ namespace EShop.UI.Services
 
         public async Task ClearBasket(string userId)
         {
-            var client = new HttpClient();
-            client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _ocpApimSubscriptionKey);
-            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + GetAccessToken("BasketAPI").Result);
-            await client.DeleteAsync($"{_remoteServiceBaseUrl}/basket/{userId}");
+            ClearAuthorizationHeaders();
+            _httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _ocpApimSubscriptionKey);
+            _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + GetAccessToken("BasketAPI").Result);
+            await _httpClient.DeleteAsync($"{_remoteServiceBaseUrl}/basket/{userId}");
         }
 
         public async Task<Basket> GetBasket(string userId)
         {
             try
             {
-                var client = new HttpClient();
-                client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _ocpApimSubscriptionKey);
-                client.DefaultRequestHeaders.Add("Authorization", "Bearer " + GetAccessToken("BasketAPI").Result);
-                var dataString = await client.GetStringAsync($"{_remoteServiceBaseUrl}/basket/{userId}");
+                ClearAuthorizationHeaders();
+                _httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _ocpApimSubscriptionKey);
+                _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + GetAccessToken("BasketAPI").Result);
+                var dataString = await _httpClient.GetStringAsync($"{_remoteServiceBaseUrl}/basket/{userId}");
                 var response = JsonConvert.DeserializeObject<Basket>(dataString.ToString());
                 if (response == null)
                 {
@@ -84,13 +88,13 @@ namespace EShop.UI.Services
 
         public async Task<Basket> UpdateBasket(Basket basket)
         {
-            var client = new HttpClient();
-            client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _ocpApimSubscriptionKey);
-            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + GetAccessToken("BasketAPI").Result);
+            ClearAuthorizationHeaders();
+            _httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _ocpApimSubscriptionKey);
+            _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + GetAccessToken("BasketAPI").Result);
             var json = JsonConvert.SerializeObject(basket);
             var stringContent = new StringContent(json, UnicodeEncoding.UTF8, "application/json"); // use MediaTypeNames.Application.Json in Core 3.0+ and Standard 2.1+
 
-            var response = await client.PostAsync($"{_remoteServiceBaseUrl}/basket/", stringContent);
+            var response = await _httpClient.PostAsync($"{_remoteServiceBaseUrl}/basket/", stringContent);
            
             return basket; 
         }
@@ -129,6 +133,11 @@ namespace EShop.UI.Services
             var handler = new JwtSecurityTokenHandler();
             var accesstoken = handler.WriteToken(secToken);
             return accesstoken;
+        }
+        private void ClearAuthorizationHeaders()
+        {
+            _httpClient.DefaultRequestHeaders.Remove("Authorization");
+            _httpClient.DefaultRequestHeaders.Remove("Ocp-Apim-Subscription-Key");
         }
     }
 }

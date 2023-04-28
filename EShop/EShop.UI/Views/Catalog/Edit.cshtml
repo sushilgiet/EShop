@@ -69,6 +69,9 @@
                   
                     <label>Product Image</label>
                     <div>
+                        <span class="text-danger"> @Html.ValidationMessageFor(x => x.CatalogItem.PictureUrl)</span>
+                    </div>
+                    <div>
                         <img src="@Model.CatalogItem.PictureUrl" width="360" height="200" style="vertical-align:bottom" />
                     </div>
                     <input type="file" name="ImageUrl" class="form-control" />

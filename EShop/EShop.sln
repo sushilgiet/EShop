@@ -51,8 +51,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CatalogService.Test", "Cata
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessageSender", "MessageSender\MessageSender.csproj", "{72BD2F01-D1EF-442D-87F0-7992AD3FD15C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BasketService.Test", "BasketService.Test\BasketService.Test.csproj", "{BF9F7D90-E687-49CF-A72A-37CA7F7ED2BB}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -103,10 +101,6 @@ Global
 		{72BD2F01-D1EF-442D-87F0-7992AD3FD15C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{72BD2F01-D1EF-442D-87F0-7992AD3FD15C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{72BD2F01-D1EF-442D-87F0-7992AD3FD15C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BF9F7D90-E687-49CF-A72A-37CA7F7ED2BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BF9F7D90-E687-49CF-A72A-37CA7F7ED2BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BF9F7D90-E687-49CF-A72A-37CA7F7ED2BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BF9F7D90-E687-49CF-A72A-37CA7F7ED2BB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -128,7 +122,6 @@ Global
 		{90AE6034-CE7B-4921-A79B-10F112C4E68A} = {161F11FA-B7E8-4E25-8B67-12FAC5DF4058}
 		{B877178B-96DA-4888-BD55-0C04B97D6C38} = {8EE3DA1E-2714-4780-96F3-1291BE6B951D}
 		{72BD2F01-D1EF-442D-87F0-7992AD3FD15C} = {90AE6034-CE7B-4921-A79B-10F112C4E68A}
-		{BF9F7D90-E687-49CF-A72A-37CA7F7ED2BB} = {8EE3DA1E-2714-4780-96F3-1291BE6B951D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {63D35DFB-CF92-4BEE-A973-1375EEAC0152}

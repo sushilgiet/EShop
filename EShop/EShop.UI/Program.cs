@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
+using Polly;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
@@ -23,6 +24,9 @@ builder.Services.Configure<MvcOptions>(options =>
 {
     options.Filters.Add(new RequireHttpsAttribute());
 });
+builder.Services.AddHttpClient("EshopHttpClient")
+    .AddPolicyHandler(Policy.TimeoutAsync<HttpResponseMessage>(TimeSpan.FromSeconds(60)))
+    .AddTransientHttpErrorPolicy(builder => builder.WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))));
 var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {

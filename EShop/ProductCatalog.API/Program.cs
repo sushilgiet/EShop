@@ -51,11 +51,11 @@ app.UseHttpsRedirection();
 app.MapControllers();
 using (IServiceScope scope = app.Services.CreateScope())
 {
-   var services = scope.ServiceProvider;
-   var context = services.GetRequiredService<ProductCatalogContext>();
-   context.Database.EnsureCreated();
-   context.Database.Migrate();
-   ProductCatalogSeed.SeedAsync(context).Wait();
+   //var services = scope.ServiceProvider;
+   //var context = services.GetRequiredService<ProductCatalogContext>();
+   //context.Database.EnsureCreated();
+   //context.Database.Migrate();
+   //ProductCatalogSeed.SeedAsync(context).Wait();
 }
 
 

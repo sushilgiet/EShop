@@ -17,7 +17,7 @@
                 <div class="form-group">
                     <label asp-for="@Model.ProductName"></label>
                    
-                    <input class="form-control" type="text" asp-for="@Model.ProductName" />
+                    <input class="form-control" type="text" asp-for="@Model.ProductName" readonly />
                 </div>
             </div>
             <div class="col-md-4">
@@ -26,7 +26,7 @@
                     <div>
                         <span class="text-danger" asp-validation-for="@Model.Price"></span>
                     </div>
-                    <input class="form-control" type="number" asp-for="@Model.Price" />
+                    <input class="form-control" type="number" asp-for="@Model.Price" readonly/>
                 </div>
             </div>
         </div>
@@ -53,7 +53,7 @@
                 </div>
             </div>
         </div>
-
+        <br />
         <div class="row">
             <div class="col-md-3">
                 <div class="form-group">
