@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Logging;
 using ProductCatalog.Application.Commands;
 using ProductCatalog.Application.Contracts.Persistence;
 using ProductCatalog.Domain.Entities;
@@ -14,15 +15,21 @@ namespace ProductCatalog.Application.Handlers
     {
 
         private readonly ICatalogItemRepository _repo;
-        public AddCatalogItemCommandHandler(ICatalogItemRepository repo)
+        private ILogger<AddCatalogItemCommandHandler> _logger;
+
+     
+
+        public AddCatalogItemCommandHandler(ICatalogItemRepository repo, ILogger<AddCatalogItemCommandHandler> logger)
         {
              _repo = repo;
+            _logger = logger;
         }
 
         public async Task<CatalogItem> Handle(AddCatalogItemCommand request, CancellationToken cancellationToken)
         {
             CatalogItem item = new CatalogItem(request.Name, request.Description,request.Price,request.PictureFileName, request.PictureUrl, request.CatalogTypeId, request.CatalogBrandId);
             item.Validate();
+           
             return await _repo.Add(item);
         }
     }

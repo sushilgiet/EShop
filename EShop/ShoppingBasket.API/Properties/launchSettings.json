@@ -4,7 +4,9 @@
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "VaultUri": "https://kv-eshop.vault.azure.net/",
+        "AZURE_USERNAME": "sushit.giet@gmail.com"
       },
       "applicationUrl": "https://localhost:62304;http://localhost:62305"
     },
@@ -13,7 +15,11 @@
       "launchBrowser": true,
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
       "publishAllPorts": true,
-      "useSSL": true
+      "useSSL": true,
+      "environmentVariables": {
+        "VaultUri": "https://kv-eshop.vault.azure.net/",
+        "AZURE_USERNAME": "sushit.giet@gmail.com"
+      }
     },
     "WSL": {
       "commandName": "WSL2",
@@ -21,7 +27,9 @@
       "launchUrl": "https://localhost:62304",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "ASPNETCORE_URLS": "https://localhost:62304;http://localhost:62305"
+        "ASPNETCORE_URLS": "https://localhost:62304;http://localhost:62305",
+        "VaultUri": "https://kv-eshop.vault.azure.net/",
+        "AZURE_USERNAME": "sushit.giet@gmail.com"
       },
       "distributionName": ""
     }

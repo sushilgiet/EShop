@@ -50,14 +50,15 @@ namespace ProductCatalog.Persistance
         }
         static IEnumerable<CatalogItem> GetPreconfiguredItems()
         {
+            // name, string description, decimal price, string pictureFileName, string pictureUrl, int catalogTypeId, int catalogBrandId,int id
             return new List<CatalogItem>()
             {
-            //    new CatalogItem() { CatalogTypeId=2,CatalogBrandId=3, Description = "Shoes for next century", Name = "World Star", Price = 199.5M, PictureUrl = "http://storage/api/pic/1",PictureFileName=string.Empty },
-            //    new CatalogItem() { CatalogTypeId=1,CatalogBrandId=2, Description = "Will make you world champions", Name = "White Line", Price= 88.50M, PictureUrl = "http://storage/api/pic/2" ,PictureFileName=string.Empty},
-            //    new CatalogItem() { CatalogTypeId=2,CatalogBrandId=3, Description = "You have already won gold medal", Name = "Prism White Shoes", Price = 129, PictureUrl = "http://storage/api/pic/3",PictureFileName=string.Empty },
-            //    new CatalogItem() { CatalogTypeId=2,CatalogBrandId=2, Description = "Olympic runner", Name = "Foundation Hitech", Price = 12, PictureUrl = "http://storage/api/pic/4",PictureFileName=string.Empty },
-            //    new CatalogItem() { CatalogTypeId=2,CatalogBrandId=1, Description = "Roslyn Red Sheet", Name = "Roslyn White", Price = 188.5M, PictureUrl = "http://storage/api/pic/5",PictureFileName=string.Empty },
-            //    new CatalogItem() { CatalogTypeId=3,CatalogBrandId=1, Description = "Rolan Garros", Name = "Paris Blues", Price = 312, PictureUrl = "http://storage/api/pic/15",PictureFileName=string.Empty }
+             new CatalogItem( "World Star","Shoes for next century",199.5M,string.Empty,"http://storage/api/pic/1",2,3),
+              new CatalogItem( "White Line","Will make you world champions",99.5M,string.Empty,"http://storage/api/pic/2",1,2),
+               new CatalogItem( "Prism White Shoes","You have already won gold medal",199.5M,string.Empty,"http://storage/api/pic/3",2,2),
+                new CatalogItem( "Foundation Hitech","Olympic runner",80.5M,string.Empty,"http://storage/api/pic/4",2,1),
+                 new CatalogItem( "Roslyn White","Roslyn Red Sheet",87.5M,string.Empty,"http://storage/api/pic/5",2,3),
+                  new CatalogItem( "Paris Blues","Rolan Garros",86.5M,string.Empty,"http://storage/api/pic/6",3,1)
             };
         }
     }

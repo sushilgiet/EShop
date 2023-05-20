@@ -10,6 +10,7 @@ using ProductCatalog.Application.Contracts;
 using ProductCatalog.Application.Contracts.Persistence;
 using ProductCatalog.Domain.Entities;
 using ProductCatalog.Application.Events;
+using Microsoft.Extensions.Logging;
 
 namespace CatalogService.Test.Handlers
 {
@@ -17,6 +18,7 @@ namespace CatalogService.Test.Handlers
     {
         Mock<IMessageSender> _mocksender;
         List<BlobInformation> _messages;
+        Mock<ILogger<ProductImageUploadEventHandler>> _logger;
         public ProductImageUploadEventHandlerTests()
         {
             _messages = new List<BlobInformation>();
@@ -24,6 +26,7 @@ namespace CatalogService.Test.Handlers
             _mocksender.Setup(r => r.SendMessageAsync(It.IsAny<BlobInformation>())).Callback<BlobInformation>(
                c => _messages.Add(c)
                 );
+            _logger = new Mock<ILogger<ProductImageUploadEventHandler>>();
         }
         [Fact()]
         public async Task Handle_IsMessageAdded_true()

@@ -1,9 +1,8 @@
-//using Microsoft.EntityFrameworkCore;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-//using ProductCatalog.API.Extensions;
 using ProductCatalog.Application;
 using ProductCatalog.Persistance;
 using Microsoft.Identity.Web;
@@ -14,8 +13,18 @@ using System.Net;
 using System.Reflection;
 using MediatR;
 using ProductCatalog.API.Extensions;
+using Microsoft.AspNetCore.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Configuration.AddAzureAppConfiguration(options =>
+               options.Connect(builder.Configuration["AppConfig:EndPoint"]).ConfigureKeyVault(kv =>
+               {
+                   kv.SetCredential(new DefaultAzureCredential());
+               }));
+builder.Services.AddMicrosoftIdentityWebApiAuthentication(builder.Configuration, "Catalog:AzureAd");
+
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -29,11 +38,8 @@ builder.Services.AddSwaggerGen(options =>
 });
 builder.Services.ConfigurePersistenceServices(builder.Configuration);
 builder.Services.ConfigureApplicationServices(builder.Configuration);
-builder.Services.AddMicrosoftIdentityWebApiAuthentication(builder.Configuration, "AzureAd");
 
-builder.Configuration.AddAzureKeyVault(
-new Uri(builder.Configuration["KeyVault:VaultUri"]),
-new ClientSecretCredential(builder.Configuration["AzureAd:TenantId"], builder.Configuration["AzureAd:ClientId"], builder.Configuration["AzureAd:ClientSecret"]));
+
 
 builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
 var app = builder.Build();
@@ -49,14 +55,42 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseHttpsRedirection();
 app.MapControllers();
-using (IServiceScope scope = app.Services.CreateScope())
-{
-   //var services = scope.ServiceProvider;
-   //var context = services.GetRequiredService<ProductCatalogContext>();
-   //context.Database.EnsureCreated();
-   //context.Database.Migrate();
-   //ProductCatalogSeed.SeedAsync(context).Wait();
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//using (IServiceScope scope = app.Services.CreateScope())
+//{
+//   var services = scope.ServiceProvider;
+//   var context = services.GetRequiredService<ProductCatalogContext>();
+//   context.Database.EnsureCreated();
+//   context.Database.Migrate();
+//   ProductCatalogSeed.SeedAsync(context).Wait();
+//}
 
 
 app.Run();

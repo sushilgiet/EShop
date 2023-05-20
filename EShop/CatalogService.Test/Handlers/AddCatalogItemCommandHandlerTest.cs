@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using Microsoft.Extensions.Logging;
+using Moq;
 using ProductCatalog.Application.Commands;
 using ProductCatalog.Application.Contracts.Persistence;
 using ProductCatalog.Application.Handlers;
@@ -15,9 +16,13 @@ namespace CatalogService.Test.Handlers
     public class AddCatalogItemCommandHandlerTest
     {
         private readonly Mock<ICatalogItemRepository> _repo;
+        private readonly Mock<ILogger<AddCatalogItemCommandHandler>> _logger;
+        
+
         public AddCatalogItemCommandHandlerTest()
         {
             _repo = MockCatalogItemRepository.GetCatalogItemRepository();
+            _logger = new Mock<ILogger<AddCatalogItemCommandHandler>>();
         }
         [Fact]
         public async Task AddCatalogItem_IsCatalogItemAdded_ReturnTrue()
@@ -34,7 +39,7 @@ namespace CatalogService.Test.Handlers
                 PictureUrl = catalogItem.PictureUrl
             };
 
-            var handler = new AddCatalogItemCommandHandler(_repo.Object);
+            var handler = new AddCatalogItemCommandHandler(_repo.Object,_logger.Object);
             var addedItem = await handler.Handle(command, CancellationToken.None);
 
             Assert.NotNull(addedItem);

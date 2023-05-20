@@ -2,6 +2,7 @@
 using MediatR;
 using Microsoft.Azure.ServiceBus.Core;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using ProductCatalog.Application.Contracts;
 using ProductCatalog.Application.Events;
@@ -19,10 +20,12 @@ namespace ProductCatalog.Application.Handlers
     {
         IConfiguration _configuration;
         IMessageSender _messageSender;
-        public ProductImageUploadEventHandler(IConfiguration configuration,IMessageSender messageSender)
+        Microsoft.Extensions.Logging.ILogger<ProductImageUploadEventHandler> _logger;
+        public ProductImageUploadEventHandler(IConfiguration configuration,IMessageSender messageSender, Microsoft.Extensions.Logging.ILogger<ProductImageUploadEventHandler> logger)
         {
             _configuration = configuration;
-            _messageSender= messageSender;
+            _messageSender = messageSender;
+            _logger = logger;
         }
         public ProductImageUploadEventHandler(IMessageSender messageSender)
         {
@@ -32,15 +35,15 @@ namespace ProductCatalog.Application.Handlers
 
         public async Task Handle(ProductImageUploadEvent notification, CancellationToken cancellationToken)
         {
+            
             await SendMessage(notification);
         }
 
         public async Task SendMessage(ProductImageUploadEvent notification)
         {
-            //QueueClient queueClient = new QueueClient(_configuration.GetConnectionString("CatalogImageContainer"), _configuration["CatalogImageQueue"]);
-            //string blobString = ToBase64(notification.BlobInformation);
-            //await queueClient.SendMessageAsync(blobString);
+           
             _messageSender.SendMessageAsync(notification.BlobInformation);
+            _logger.LogInformation("Notification to generate thumbnail queue",new { Blob= notification.BlobInformation });
         }
 
         private string ToBase64(object obj)

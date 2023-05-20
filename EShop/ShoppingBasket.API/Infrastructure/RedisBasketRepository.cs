@@ -39,11 +39,19 @@ namespace ShoppingBasket.API.Infrastructure
 
         public async Task<Basket> UpdateBasketAsync(Basket basket)
         {
-            var created = await _database.StringSetAsync(basket.BuyerId, JsonConvert.SerializeObject(basket));
-            if (!created)
+            try
             {
-                throw new ApplicationException("Basket cannot be saved...");
+                var created = await _database.StringSetAsync(basket.BuyerId, JsonConvert.SerializeObject(basket));
+                if (!created)
+                {
+                    throw new ApplicationException("Basket cannot be saved...");
+                }
             }
+            catch(Exception ex) 
+            {
+                throw;
+            }
+          
             return await GetBasketAsync(basket.BuyerId);
         }
     }

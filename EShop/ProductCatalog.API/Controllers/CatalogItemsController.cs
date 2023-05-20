@@ -31,9 +31,11 @@ namespace ProductCatalog.API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CatalogItem>>> GetCatalogItems()
         {
-            // return Ok(await _boItem.GetCatalogItems());
+            _logger.LogInformation("Query for Get Catalog Items");
              var query = new GetAllCatalogItemQuery();
-             return Ok(await _mediator.Send(query));
+             var items = await _mediator.Send(query);
+            _logger.LogInformation("Get All Catalog Items");
+            return Ok(items);
             
         }
 
@@ -43,23 +45,25 @@ namespace ProductCatalog.API.Controllers
         {
             //var catalogItem = await _boItem.GetCatalogItem(id);
             var query = new GetCatalogItemQuery { Id=id};
+            _logger.LogInformation("Get Catalog Item", new { id = id});
             var catalogItem = await _mediator.Send(query);
             if (catalogItem == null)
             {
+                _logger.LogWarning("Catalog Item not found",new {ID=id});
                 return NotFound();
+               
             }
-
+            _logger.LogInformation("Catalog Item fetched",new {id=id,CatalogItem= catalogItem });
             return catalogItem;
         }
      
-        // PUT: api/CatalogItems/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+        
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCatalogItem(int id, CatalogItem catalogItem)
         {
             if (id != catalogItem.Id)
             {
+                _logger.LogWarning("Catalog Item not found", new { ID = id });
                 return BadRequest();
             }
             var command = new UpdateCatalogItemCommand {
@@ -73,6 +77,7 @@ namespace ProductCatalog.API.Controllers
                 Id= catalogItem.Id
             };
             await _mediator.Send(command);
+            _logger.LogInformation("Put Catalog Item", new { id = id, CatalogItem = catalogItem });
             return NoContent();
         }
 
@@ -93,6 +98,7 @@ namespace ProductCatalog.API.Controllers
             
             };
             var item=await _mediator.Send(command);
+            _logger.LogInformation("Catalog Item Updated", new { id = catalogItem.Id, CatalogItem = item });
             return CreatedAtAction("GetCatalogItem", new { id = catalogItem.Id }, item);
         }
 
@@ -100,8 +106,10 @@ namespace ProductCatalog.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCatalogItem(int id)
         {
+            _logger.LogInformation("Request for Delete Catalog Item", new { id = id });
             var command = new DeleteCatalogItemCommand { Id=id};
             var item = await _mediator.Send(command);
+            _logger.LogInformation("Deleted Catalog Item", new { id = id, CatalogItem = item });
             return NoContent();
 
         }
@@ -114,6 +122,7 @@ namespace ProductCatalog.API.Controllers
             BlobContainerClient blobClient = blobServiceClient.GetBlobContainerClient(_configuration.GetValue<string>("CatalogContainer"));
             string blobName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
             var blob = await blobClient.UploadBlobAsync(blobName, file.OpenReadStream());
+            _logger.LogInformation("Product Image Uploaded", new { file = file.FileName, BlobPath = blobClient.Uri.ToString() + "/" + blobName });
             return blobClient.Uri.ToString() + "/" + blobName;
 
         }
@@ -127,6 +136,7 @@ namespace ProductCatalog.API.Controllers
             };
 
             await _mediator.Publish(uploadEvent);
+            _logger.LogInformation("Product Image Upload Event", new { id = blobInformation.Id, BlobInfo = blobInformation });
             return Ok();
         }
        

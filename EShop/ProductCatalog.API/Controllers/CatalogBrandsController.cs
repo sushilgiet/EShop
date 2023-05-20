@@ -14,10 +14,12 @@ namespace ProductCatalog.API.Controllers
 
        
         IMediator _mediator;
-        public CatalogBrandsController(IMediator mediator)
+        ILogger<CatalogBrandsController> _logger;
+        public CatalogBrandsController(IMediator mediator, ILogger<CatalogBrandsController> logger)
         {
 
             _mediator = mediator;
+            _logger = logger;
         }
 
         // GET: api/CatalogBrands
@@ -26,6 +28,7 @@ namespace ProductCatalog.API.Controllers
         {
             var query = new GetCatalogBrandsQuery();
             var brands = await _mediator.Send(query);
+            _logger.LogInformation("Get All Catalog brands");
             return Ok(brands);
         }
 

@@ -101,9 +101,9 @@ namespace EShop.UI.Services
         private async Task<string> GetAccessToken(string apiName)
         {
 
-            string clientId = _configuration["AzureAd:ClientId"];
-            string tenantId = _configuration["AzureAd:TenantId"];
-            string secret = _configuration["AzureAd:Secret"];
+            string clientId = _configuration["EShop:AzureAd:ClientId"];
+            string tenantId = _configuration["EShop:AzureAd:TenantId"];
+            string secret = _configuration["EShop:AzureAd:Secret"];
             IConfidentialClientApplication app = ConfidentialClientApplicationBuilder
                   .Create(clientId)
                  .WithAuthority(AzureCloudInstance.AzurePublic, tenantId)

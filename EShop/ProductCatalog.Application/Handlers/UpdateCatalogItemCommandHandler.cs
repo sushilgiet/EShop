@@ -1,5 +1,6 @@
 ﻿using EventBus.Abstractions;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using ProductCatalog.Application.Commands;
 using ProductCatalog.Application.Contracts.Persistence;
 using ProductCatalog.Application.Events;
@@ -18,11 +19,12 @@ namespace ProductCatalog.Application.Handlers
 
         private readonly ICatalogItemRepository _repo;
         private readonly IEventBus    _eventBus;
-
-        public UpdateCatalogItemCommandHandler(ICatalogItemRepository repo, IEventBus bus)
+        private readonly ILogger<UpdateCatalogItemCommandHandler> _logger;
+        public UpdateCatalogItemCommandHandler(ICatalogItemRepository repo, IEventBus bus, ILogger<UpdateCatalogItemCommandHandler> logger)
         {
             _repo = repo;
             _eventBus = bus;
+            _logger = logger;
         }
 
         public async Task<Unit> Handle(UpdateCatalogItemCommand request, CancellationToken cancellationToken)
@@ -38,10 +40,12 @@ namespace ProductCatalog.Application.Handlers
                 pi.SetValue(catalogItem, pi.GetValue(newCatalogItem));
             }
             await _repo.Update(catalogItem);
+            _logger.LogInformation("Catalog Item Updated", new { CatalogItem=catalogItem });
             if (raiseProductPriceUpdatedEvent)
             {
                 var priceChangedEvent = new ProductPriceChangedEvent(request.Id, request.Price, oldPrice);
                 _eventBus.Publish(priceChangedEvent);
+                _logger.LogInformation("Price Changed Event", new { PriceChangedEvent = priceChangedEvent });
             }
 
 

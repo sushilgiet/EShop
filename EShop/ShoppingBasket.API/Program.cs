@@ -11,7 +11,7 @@ using ShoppingBasket.API.Events;
 using ShoppingBasket.API.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddMicrosoftIdentityWebApiAuthentication(builder.Configuration, "AzureAd");
+builder.Services.AddMicrosoftIdentityWebApiAuthentication(builder.Configuration, "BasketAPI:AzureAd");
 // Add services to the container.
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -34,10 +34,14 @@ builder.Services.AddSwaggerGen(options =>
 //    {
 //        ManagedIdentityClientId = builder.Configuration["AzureADManagedIdentityClientId"]
 //    }));
-builder.Configuration.AddAzureKeyVault(
-        new Uri($"https://{builder.Configuration["KeyVaultName"]}.vault.azure.net/"),
-     new ClientSecretCredential(builder.Configuration["AzureAd:TenantId"], builder.Configuration["AzureAd:ClientId"], builder.Configuration["AzureAd:ClientSecret"]));
-
+//builder.Configuration.AddAzureKeyVault(
+//        new Uri($"https://{builder.Configuration["KeyVaultName"]}.vault.azure.net/"),
+//     new ClientSecretCredential(builder.Configuration["AzureAd:TenantId"], builder.Configuration["AzureAd:ClientId"], builder.Configuration["AzureAd:ClientSecret"]));
+builder.Configuration.AddAzureAppConfiguration(options =>
+                  options.Connect(builder.Configuration["AppConfig:Endpoint"]).ConfigureKeyVault(kv =>
+                  {
+                      kv.SetCredential(new DefaultAzureCredential());
+                  }));
 builder.Services.AddSingleton<ConnectionMultiplexer>(sp =>
 {
     var configuration = ConfigurationOptions.Parse(builder.Configuration["RedisConnectionString"], true);

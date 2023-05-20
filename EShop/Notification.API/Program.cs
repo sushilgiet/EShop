@@ -2,11 +2,9 @@ using Azure.Identity;
 using Microsoft.Identity.Web;
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddMicrosoftIdentityWebApiAuthentication(builder.Configuration, "AzureAd");
 
+builder.Services.AddMicrosoftIdentityWebApiAuthentication(builder.Configuration, "NotificationAPI:AzureAd");
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -17,9 +15,15 @@ builder.Services.AddSwaggerGen(options =>
         Description = "Swagger in Notification API"
     });
 });
-builder.Configuration.AddAzureKeyVault(
-     new Uri(builder.Configuration["KeyVault:VaultUri"]),
-     new ClientSecretCredential(builder.Configuration["AzureAd:TenantId"], builder.Configuration["AzureAd:ClientId"], builder.Configuration["AzureAd:ClientSecret"]));
+//builder.Configuration.AddAzureKeyVault(
+//     new Uri(builder.Configuration["KeyVault:VaultUri"]),
+//     new ClientSecretCredential(builder.Configuration["AzureAd:TenantId"], builder.Configuration["AzureAd:ClientId"], builder.Configuration["AzureAd:ClientSecret"]));
+builder.Configuration.AddAzureAppConfiguration(options =>
+                 options.Connect(builder.Configuration["AppConfig:Endpoint"]).ConfigureKeyVault(kv =>
+                 {
+                     kv.SetCredential(new DefaultAzureCredential());
+                 }));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
