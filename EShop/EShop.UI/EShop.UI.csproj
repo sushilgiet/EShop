@@ -6,7 +6,6 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>aspnet-EShop.UI-1d0c651c-6bc6-4742-8fa9-67af101c792d</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-  
   </PropertyGroup>
 
   <ItemGroup>

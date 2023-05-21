@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: basket-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: basket-pod
+  template:
+    metadata:
+      labels:
+        app: basket-pod
+    spec:
+      containers:
+      - name: basket-container
+        image: acreshopcap/shoppingbasketapi
+        ports:
+        - containerPort: 80
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: Logging__LogLevel__Default
+          value: "Information"
+        - name: Logging__LogLevel__Microsoft.AspNetCore
+          value: "Warning"
+        - name: AppConfig__Endpoint
+          value: "Endpoint=https://appconfig-eshop.azconfig.io;Id=RLQE;Secret=5OKT5v4hRmcXTcqjZwHa75bdiqBZwOFGGzczU87MiqQ="
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: basket-srv
+spec:
+  type: ClusterIP
+  selector:
+    app: basket-pod
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 80
