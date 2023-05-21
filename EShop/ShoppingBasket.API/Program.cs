@@ -11,6 +11,11 @@ using ShoppingBasket.API.Events;
 using ShoppingBasket.API.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Configuration.AddAzureAppConfiguration(options =>
+                  options.Connect(builder.Configuration["AppConfig:Endpoint"]).ConfigureKeyVault(kv =>
+                  {
+                      kv.SetCredential(new DefaultAzureCredential());
+                  }));
 builder.Services.AddMicrosoftIdentityWebApiAuthentication(builder.Configuration, "BasketAPI:AzureAd");
 // Add services to the container.
 builder.Services.AddControllers();
@@ -26,29 +31,14 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-//builder.Configuration.AddAzureKeyVault(new Uri($"https://{builder.Configuration["KeyVaultName"]}.vault.azure.net/"),
-//        new DefaultAzureCredential());
-//builder.Configuration.AddAzureKeyVault(
-//    new Uri($"https://{builder.Configuration["KeyVaultName"]}.vault.azure.net/"),
-//    new DefaultAzureCredential(new DefaultAzureCredentialOptions
-//    {
-//        ManagedIdentityClientId = builder.Configuration["AzureADManagedIdentityClientId"]
-//    }));
-//builder.Configuration.AddAzureKeyVault(
-//        new Uri($"https://{builder.Configuration["KeyVaultName"]}.vault.azure.net/"),
-//     new ClientSecretCredential(builder.Configuration["AzureAd:TenantId"], builder.Configuration["AzureAd:ClientId"], builder.Configuration["AzureAd:ClientSecret"]));
-builder.Configuration.AddAzureAppConfiguration(options =>
-                  options.Connect(builder.Configuration["AppConfig:Endpoint"]).ConfigureKeyVault(kv =>
-                  {
-                      kv.SetCredential(new DefaultAzureCredential());
-                  }));
+
 builder.Services.AddSingleton<ConnectionMultiplexer>(sp =>
 {
     var configuration = ConfigurationOptions.Parse(builder.Configuration["RedisConnectionString"], true);
     //configuration.ResolveDns = true;
     // OR
     configuration.ResolveDns = false; // If Azure Redis Cache is used.
-    configuration.AbortOnConnectFail = false;
+   // configuration.AbortOnConnectFail = false;
     return ConnectionMultiplexer.Connect(configuration);
 });
 builder.Services.AddSingleton<IEventBus>(x =>
