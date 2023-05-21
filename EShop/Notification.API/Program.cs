@@ -21,7 +21,11 @@ builder.Services.AddSwaggerGen(options =>
 builder.Configuration.AddAzureAppConfiguration(options =>
                  options.Connect(builder.Configuration["AppConfig:Endpoint"]).ConfigureKeyVault(kv =>
                  {
-                     kv.SetCredential(new DefaultAzureCredential());
+                     kv.SetCredential(new ClientSecretCredential(
+    tenantId: "47f6b62e-32c6-49c5-b373-6243a85929c0",
+    clientId: "60a39ad8-1928-462a-934d-ea248f795538",
+    clientSecret: "ywh8Q~EXVTCnfeoClH~FOtu1M_OZrA0dobN3fdr-")
+);
                  }));
 
 var app = builder.Build();
