@@ -1,12 +1,11 @@
 {
   "dependencies": {
-    "secrets1": {
-      "ignored": "true",
-      "type": "secrets.keyVault"
-    },
     "mssql1": {
       "ignored": "true",
       "type": "mssql"
+    },
+    "secrets1": {
+      "type": "secrets.user"
     }
   }
 }
