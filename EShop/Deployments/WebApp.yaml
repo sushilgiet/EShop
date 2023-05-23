@@ -19,7 +19,6 @@ spec:
         - containerPort: 80
         - containerPort: 443
         imagePullPolicy: IfNotPresent
-        
         env:
         - name: CatalogUrl
           value: "http://catalog-svc"
@@ -41,14 +40,12 @@ kind: Service
 metadata:
   name: eshop
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   selector:
     app: eshop-pod
   ports:
     - name: http
       protocol: TCP
-      port: 8081
-      targetPort: 80
+      port: 80
     - name: https
-      port: 6443
-      targetPort: 443
+      port: 443

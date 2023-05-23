@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: basket-container
-        image: acreshopcap/shoppingbasketapi
+        image: acreshopcap.azurecr.io/shoppingbasketapi
         ports:
         - containerPort: 80
         imagePullPolicy: IfNotPresent
@@ -30,7 +30,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: basket-srv
+  name: basket-svc
 spec:
   type: ClusterIP
   selector:

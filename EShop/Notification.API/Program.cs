@@ -40,7 +40,7 @@ app.UseSwagger().UseSwaggerUI(c => {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Notification API");
 });
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
