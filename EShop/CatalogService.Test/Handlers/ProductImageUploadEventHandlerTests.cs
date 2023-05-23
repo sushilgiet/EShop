@@ -35,7 +35,7 @@ namespace CatalogService.Test.Handlers
             {
                 Id = 1
             };
-            var handler = new ProductImageUploadEventHandler(_mocksender.Object);
+            var handler = new ProductImageUploadEventHandler(_mocksender.Object, _logger.Object);
             await handler.Handle(new ProductImageUploadEvent
             {
                 BlobInformation = message

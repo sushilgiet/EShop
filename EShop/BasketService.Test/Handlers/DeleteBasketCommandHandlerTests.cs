@@ -30,12 +30,12 @@ namespace ShoppingBasket.API.Handlers.Tests
         {
             //Arrange
             var handler = new DeleteBasketCommandHandler(_repo.Object);
+            var count = _baskets.Count();
             //Act
-            await handler.Handle(new DeleteBasketItemCommand { Id = "Demo" }, CancellationToken.None);
+            await handler.Handle(new DeleteBasketItemCommand { Id = "User2" }, CancellationToken.None);
 
-            //Assert
-            Assert.True(1== 1);
-            //Assert.DoesNotContain(, _catalogItems);
+
+            Assert.True(count== _baskets.Count+1);
         }
     }
 }

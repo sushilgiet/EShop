@@ -42,8 +42,8 @@ namespace ShoppingBasket.API.Handlers.Tests
 
             };
             var handler = new UpdateBasketCommandHandler(_repo.Object);
-            await handler.Handle(command, CancellationToken.None);
-            Assert.True(false, "This test needs an implementation");
+            var basketitem=await handler.Handle(command, CancellationToken.None);
+            Assert.True(basket.BuyerId== basketitem.BuyerId);
         }
     }
 

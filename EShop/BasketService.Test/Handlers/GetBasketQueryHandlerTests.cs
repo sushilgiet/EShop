@@ -26,9 +26,11 @@ namespace ShoppingBasket.API.Handlers.Tests
             _baskets = MockBasketRepository.Baskets;
         }
         [Fact()]
-        public void HandleTest()
+        public async Task GetBasketItem_ContainsId_ReturnsTrue()
         {
-            Assert.True(false, "This test needs an implementation");
+            var handler = new GetBasketQueryHandler(_repo.Object);
+            var results = await handler.Handle(new GetBasketQuery { Id= "User1" }, CancellationToken.None);
+            Assert.True(results.BuyerId== "User1");
         }
     }
 }

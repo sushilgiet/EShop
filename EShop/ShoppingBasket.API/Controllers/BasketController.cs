@@ -31,8 +31,10 @@ namespace ShoppingBasket.API.Controllers
         [ProducesResponseType(typeof(Basket), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> Get(string id)
         {
+            _logger.LogInformation("Get Request for Basket for user id:" + id, new { Id = id });
             GetBasketQuery query=new GetBasketQuery { Id = id };
             var basket = await _mediator.Send(query);
+            _logger.LogInformation("Basket for user id:"+id,new  {Id=id });
             return Ok(basket);
         }
 
@@ -41,8 +43,12 @@ namespace ShoppingBasket.API.Controllers
         [ProducesResponseType(typeof(Basket), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> PostAsync([FromBody]Basket value)
         {
-            UpdateBasketItemCommand command=new UpdateBasketItemCommand { Basketdetails= value };
+            _logger.LogInformation("Updated basket item request for user id:" + value.BuyerId, new { Basket = value });
+
+            UpdateBasketItemCommand command =new UpdateBasketItemCommand { Basketdetails= value };
             var basket = await _mediator.Send(command);
+            _logger.LogInformation("Basket item updated for user id:" +value.BuyerId, new { Basket = value, DT = DateTime.UtcNow });
+
             return Ok(basket);
         }
 
@@ -52,6 +58,8 @@ namespace ShoppingBasket.API.Controllers
         {
             DeleteBasketItemCommand command = new DeleteBasketItemCommand { Id=id };
             await _mediator.Send(command);
+            _logger.LogInformation("Basket Item Deleted:" + id, new { Id = id,DT=DateTime.UtcNow });
+
             return NoContent();
         }
 

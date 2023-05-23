@@ -27,10 +27,11 @@ namespace ProductCatalog.Application.Handlers
             _messageSender = messageSender;
             _logger = logger;
         }
-        public ProductImageUploadEventHandler(IMessageSender messageSender)
+        public ProductImageUploadEventHandler(IMessageSender messageSender, Microsoft.Extensions.Logging.ILogger<ProductImageUploadEventHandler> logger)
         {
            
             _messageSender = messageSender;
+            _logger = logger;
         }
 
         public async Task Handle(ProductImageUploadEvent notification, CancellationToken cancellationToken)
